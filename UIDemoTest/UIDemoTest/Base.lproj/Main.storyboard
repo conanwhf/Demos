@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="g5G-kG-0CU">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="g5G-kG-0CU">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -37,7 +37,7 @@
                                     <constraint firstAttribute="height" constant="30" id="Zbi-WI-iC7"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <state key="normal" title="颜色"/>
+                                <state key="normal" title="图像处理"/>
                                 <connections>
                                     <segue destination="k1i-ss-xGK" kind="show" id="CII-Kz-baf"/>
                                 </connections>
@@ -49,7 +49,7 @@
                                     <constraint firstAttribute="width" constant="250" id="cns-BP-PoJ"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <state key="normal" title="字体"/>
+                                <state key="normal" title="获取信息"/>
                                 <connections>
                                     <segue destination="k1i-ss-xGK" kind="show" id="5HJ-TE-E0f"/>
                                 </connections>
@@ -61,7 +61,7 @@
                                     <constraint firstAttribute="width" constant="250" id="pv9-3F-Ct3"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <state key="normal" title="图像处理"/>
+                                <state key="normal" title="文本显示"/>
                                 <connections>
                                     <segue destination="k1i-ss-xGK" kind="show" id="6Oc-ct-ocs"/>
                                 </connections>
@@ -85,11 +85,11 @@
                                     <constraint firstAttribute="height" constant="30" id="TtA-la-joX"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="fMD-w1-Zta">
-                                <rect key="frame" x="20" y="550" width="560" height="50"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="fMD-w1-Zta">
+                                <rect key="frame" x="20" y="506" width="560" height="50"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="gus-AX-yzD"/>

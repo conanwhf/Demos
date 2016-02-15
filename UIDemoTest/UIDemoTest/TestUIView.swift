@@ -41,7 +41,7 @@ func initUIViewTest(ctl: ShowController){
 }//End Init
 
 
-func refreshUIViewTest(ctl: ShowController) {
+func refreshUIViewTest(ctl: ShowController, sender: AnyObject?) {
     let back = ctl.demo as! UIView
     let conf = ctl.sliderConfigs.map{$0.value}
 

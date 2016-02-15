@@ -34,6 +34,7 @@ class ConfigSlider {
         slider.minimumValue = 0
         slider.maximumValue = Float(max)
         slider.setValue(defaultValue, animated: true)
+        slider.tag=n
         log("slider-\(n) frame=\(newFrame)")
         
         self.name = name
@@ -43,6 +44,10 @@ class ConfigSlider {
         get {
             label.text = name + ":\(Int(slider.value))"
             return slider.value
+        }
+        set(new){
+            slider.setValue(new, animated: true)
+            label.text = name + ":\(Int(slider.value))"
         }
     }
 }
@@ -57,7 +62,7 @@ class ShowController : UIViewController {
     
     var sliderConfigs : Array <ConfigSlider> = []
     var initDemo : (ShowController)->() = {_ in }
-    var updateDemo : (ShowController)->() = {_ in }
+    var updateDemo : (ShowController,AnyObject?)->() = {_ in }
     var demo :AnyObject? = nil
 
     override func viewDidLoad() {
@@ -75,7 +80,7 @@ class ShowController : UIViewController {
         //viewSize = show.frame.size
         log("viewDidLoad: frame size=\(show.frame.size)")
         //logout.userInteractionEnabled = false
-            }
+    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -91,6 +96,12 @@ class ShowController : UIViewController {
         case "普通UIView测试" :
             initDemo = initUIViewTest
             updateDemo = refreshUIViewTest
+        case "获取信息" :
+            initDemo = initInfoTest
+            updateDemo = refreshInfoTest
+        case "图像处理" :
+            initDemo = initImageTest
+            updateDemo = refreshImageTest
         default: break
         }
         initDemo(self)
@@ -110,10 +121,9 @@ class ShowController : UIViewController {
         btnlog.alpha = logout.hidden ? 0.2 : 1.0
     }
     
-    
     func configChanged(sender: AnyObject?) {
         //log("configChanged, sender = \(sender?.name)")
-        updateDemo(self)
+        updateDemo(self,sender)
     }//End configChanged
 }//End all in controller
 
