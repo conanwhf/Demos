@@ -10,11 +10,24 @@ import UIKit
 import CoreImage
 
 private let defaultSize :(Float,Float) = (width: 600.0, height: 800.0)
-private var btnState=[0, 1, 0, 0]
-private let btnString=[["灰度图","2级灰度","16级灰度","128级灰度","256级灰度"],["ScaleToFill","AscpectFit","AspectFill","Redraw","Center","Top","Bottom","Left","Right","TopLeft","TopRight","BottomLeft","BottomRight"],
+private var btnState=[0, 0, 0, 0]
+private let btnString=[["->灰度","->彩色"],["ScaleToFill","AscpectFit","AspectFill","Redraw","Center","Top","Bottom","Left","Right","TopLeft","TopRight","BottomLeft","BottomRight"],
     ["保存"], ["复原"]]
 private var filter:Array<CIFilter>=[]
-private let configDefault:Array<Float>=[50.0,25.0,50.0,50.0]
+private let configDefault:Array<Float>=[50, 25, 50, 65, 100]
+
+func getTargetImage(mode:String="filter")->UIImage{
+    if (mode=="filter"){
+        //得到过滤后的图片
+        for i in 1...filter.count-1{
+            filter[i].setValue(filter[i-1].outputImage!, forKey: kCIInputImageKey)
+        }
+        return UIImage(CIImage: filter.last!.outputImage!)
+    }
+    else {
+        return UIImage(named: "demo.jpg")!
+    }
+}
 
 func initImageTest(ctl: ShowController){
     let mainSize = ctl.show.frame.size
@@ -25,6 +38,7 @@ func initImageTest(ctl: ShowController){
     ctl.sliderConfigs.append(ConfigSlider(n: 1, size: mainSize, max: 100, name: "对比度", defaultValue:configDefault[1]))
     ctl.sliderConfigs.append(ConfigSlider(n: 2, size: mainSize, max: 100, name: "饱和度", defaultValue:configDefault[2]))
     ctl.sliderConfigs.append(ConfigSlider(n: 3, size: mainSize, max: 100, name: "色温", defaultValue:configDefault[3]))
+    ctl.sliderConfigs.append(ConfigSlider(n: 4, size: mainSize, max: 100, name: "色度", defaultValue:configDefault[4]))
     
     ctl.sliderConfigs.forEach({
         main.addSubview($0.slider)
@@ -49,9 +63,9 @@ func initImageTest(ctl: ShowController){
     y += 30
     let img=UIImageView(frame:CGRect(x: Int(x), y: Int(y), width: Int(mainSize.width)-x*2, height: Int(mainSize.height-y)))
     ctl.demo = img as AnyObject
-    img.image=UIImage(named: "demo.jpg")
+    img.image=getTargetImage("reset")
     img.userInteractionEnabled = false
-    img.contentMode = .ScaleAspectFit
+    //img.contentMode = .ScaleAspectFit
     img.layer.borderColor = UIColor.redColor().CGColor
     main.addSubview(img)
     ctl.show.bringSubviewToFront(img)
@@ -61,7 +75,13 @@ func initImageTest(ctl: ShowController){
     filter.append(CIFilter(name: "CIColorControls")!)//亮度，对比度，饱和度
     filter.last?.setValue(CIImage(image: img.image!), forKey: kCIInputImageKey)
     filter.append(CIFilter(name: "CITemperatureAndTint")!)//色温
+    filter.append(CIFilter(name: "CISepiaTone")!)//色度
+    filter.last?.setValue(0, forKey: "InputIntensity")//色度default关闭
+//    print(filter[1].attributes)
 }
+
+
+
 
 func refreshImageTest(ctl: ShowController, sender: AnyObject?) {
     let img = ctl.demo as! UIImageView
@@ -74,10 +94,16 @@ func refreshImageTest(ctl: ShowController, sender: AnyObject?) {
         btn.setTitle(btnString[index][btnState[index]], forState: .Normal)
         switch index{
             case 0://灰度
-                break
+                if btnState[0]==1{//目标灰度图
+                    filter.append(CIFilter(name: "CIPhotoEffectMono")!)//灰度
+                }else{
+                    filter.removeLast()
+                }
+                img.image =  getTargetImage("filter")
             case 1://位置
+                img.image =  getTargetImage("reset")
                 img.contentMode = UIViewContentMode(rawValue: btnState[index])!
-                if img.contentMode != .ScaleAspectFit{
+                if img.contentMode.rawValue != 0 {//not default, show alpha mode
                     img.alpha=0.5
                     img.layer.borderWidth = 2
                 }
@@ -86,33 +112,44 @@ func refreshImageTest(ctl: ShowController, sender: AnyObject?) {
                     img.layer.borderWidth = 0
                 }
             case 2: //保存
-                break
+                UIImageWriteToSavedPhotosAlbum(img.image!, ctl, "savedImage:didFinishSavingWithError:contextInfo:", nil)
             case 3: //复原
-                for i in ctl.sliderConfigs { i.value=50 }
+                for (i,j) in ctl.sliderConfigs.enumerate() { j.value=configDefault[i] }
+                for i in 0...btnState.count-1 { btnState[i]=0 }
+                if filter.last?.name=="CIPhotoEffectMono"{  filter.removeLast() }
+                img.image =  getTargetImage("reset")
             default: break
         }
     }
     else {
-        //let conf = ctl.sliderConfigs.map{$0.value}
+        let config = ctl.sliderConfigs.map{$0.value}
+        /*
         let arg = sender as! UISlider
         log("slider \(arg) changed")
         switch arg.tag{
-        case 0://亮度   -1---1
-            filter[0].setValue(arg.value/50.0-1.0, forKey: "inputBrightness")
-        case 1: //  对比度   0---4
-            filter[0].setValue(arg.value/25.0, forKey: "inputContrast")
-        case 2://  饱和度  0---2
-            filter[0].setValue(arg.value/50.0, forKey: "inputSaturation")
-        case 3://  色温  1000-10000, 0-1000
-            print(filter[1].attributes)
-            filter[1].setValue(CIVector(x: CGFloat(arg.value*80+2000.0), y: CGFloat(arg.value)), forKey: "inputNeutral")
-        default:break
-        }
-        // 得到过滤后的图片
-        let outputImage: CIImage = filter[0].outputImage!
-        filter[1].setValue(outputImage, forKey: kCIInputImageKey)
-        img.image = UIImage(CIImage: filter[1].outputImage!)
+            case 0://亮度   -1---1
+                filter[0].setValue(arg.value/50.0-1.0, forKey: "inputBrightness")
+            case 1: //  对比度   0---4,default 1
+                filter[0].setValue(arg.value/25.0, forKey: "inputContrast")
+            case 2://  饱和度  0---2,default 1
+                filter[0].setValue(arg.value/50.0, forKey: "inputSaturation")
+            case 3://  色温  1000-10000, 0-1000
+                filter[1].setValue(CIVector(x: CGFloat(arg.value*100), y: CGFloat(arg.value-65)), forKey: "inputNeutral")
+            case 4:// 色度 0-1, default
+                filter[2].setValue((100-arg.value)/100.0, forKey: "InputIntensity")
+            default:break
+        }*/
+        //亮度   -1---1
+        filter[0].setValue(config[0]/50.0-1.0, forKey: "inputBrightness")
+        //  对比度   0---4,default 1
+        filter[0].setValue(config[1]/25.0, forKey: "inputContrast")
+        //  饱和度  0---2,default 1
+        filter[0].setValue(config[2]/50.0, forKey: "inputSaturation")
+        //  色温  1000-10000, 0-1000
+        filter[1].setValue(CIVector(x: CGFloat(config[3]*90+650), y: CGFloat(config[3]-65)), forKey: "inputNeutral")
+        // 色度 0-1, default
+        filter[2].setValue((100-config[4])/100.0, forKey: "InputIntensity")
+        img.image =  getTargetImage("filter")
     }
-    
     
 }

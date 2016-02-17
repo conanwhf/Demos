@@ -102,6 +102,9 @@ class ShowController : UIViewController {
         case "图像处理" :
             initDemo = initImageTest
             updateDemo = refreshImageTest
+        case "动画" :
+            initDemo = initAnimationTest
+            updateDemo = refreshAnimationTest
         default: break
         }
         initDemo(self)
@@ -125,6 +128,17 @@ class ShowController : UIViewController {
         //log("configChanged, sender = \(sender?.name)")
         updateDemo(self,sender)
     }//End configChanged
+    
+    
+    func savedImage(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: UnsafeMutablePointer<Void>) {
+        if error == nil {
+            let alert = UIAlertController(title: "", message: "Success", preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+            presentViewController(alert, animated: true, completion: nil)
+        } else {
+            print(error)
+        }
+    }
 }//End all in controller
 
 
