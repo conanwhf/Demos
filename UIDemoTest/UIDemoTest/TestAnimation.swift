@@ -57,8 +57,13 @@ func initAnimationTest(ctl: ShowController){
     let main = ctl.show
     let test = SnowView(frame: main.frame)
     main.addSubview(test)
+    
 }
 
 func refreshAnimationTest(ctl: ShowController, sender: AnyObject?) {
+    let main = ctl.show
+    let test = SnowView(frame: main.frame)
+    
+    ctl.demo?.removeFromSuperview()
 
 }
