@@ -77,7 +77,8 @@ class ShowController : UIViewController {
         logout.hidden = true
         logout.layer.cornerRadius = 10.0
         self.view.bringSubviewToFront(logout)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "orientChange:", name: UIDeviceOrientationDidChangeNotification, object: nil)
+        //注册系统监听事件
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "orientChange:", name: UIDeviceOrientationDidChangeNotification, object: nil)//屏幕翻转
     }
     
     override func didReceiveMemoryWarning() {
@@ -137,19 +138,17 @@ class ShowController : UIViewController {
             print(error)
         }
     }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        //log("view Layout will change!")
-    }
-    
+
     func orientChange(noti: NSNotification) {
-        //var ntfDict: [NSObject : AnyObject] = noti.userInfo!
-        //var orient: UIDeviceOrientation = UIDevice.currentDevice().orientation
-        log("orientChange!")
         if self.title! == "获取信息" {
             guard demo != nil else { return }
             refreshInfoTest(self, sender: self)
+        }
+    }
+    
+    func timerDone() {
+        if self.title! == "动画" {
+            refreshAnimationTest(self, sender: nil)
         }
     }
 }//End all in controller

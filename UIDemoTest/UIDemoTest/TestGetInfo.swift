@@ -9,16 +9,16 @@
 import UIKit
 import SystemConfiguration.CaptiveNetwork
 import NetworkExtension
+import CoreTelephony.CTCarrier
 
 private var staticInfo = ""
 private var dyInfo = ""
 
 /**
  Get SSID if WIFI connected
- 
  - returns: SSID
  */
-func getSSID() -> String {
+private func getSSID() -> String {
     let interfaces = CNCopySupportedInterfaces()
     guard interfaces != nil else{ return "" }
 
@@ -34,10 +34,9 @@ func getSSID() -> String {
 
 /**
  System info
- 
  - returns: Raw Data
  */
-func getSystemInfo()-> String {
+private func getSystemInfo()-> String {
     var systemInfo = utsname()
     uname(&systemInfo)
     var temp:Array<NSString>=[]
@@ -100,7 +99,7 @@ func getSystemInfo()-> String {
 }
 
 
-func getDeviceInfo()-> (info: String, state: String){
+private func getDeviceInfo()-> (info: String, state: String){
     var info:Array<String>=[]
     //let orientaionMode=["Unknown","Portrait","PortraitUpsideDown","LandscapeLeft","LandscapeRight","FaceUp","FaceDown"]
     let orientaionMode=["未知(Unknown)","竖屏(Portrait)","倒置竖屏(PortraitUpsideDown)","左横屏(LandscapeLeft)","右横屏(LandscapeRight)","向上平置(FaceUp)","向下翻转(FaceDown)"]
@@ -129,10 +128,9 @@ func getDeviceInfo()-> (info: String, state: String){
 
 /**
  Screen Info
- 
  - returns:width:Int, height:Int, inch:Float, A info for description:String
  */
-func getScreenInfo()->(width:Int, height:Int, inch:Float, info:String){
+private func getScreenInfo()->(width:Int, height:Int, inch:Float, info:String){
     var w:Int = Int(UIScreen.mainScreen().bounds.size.width)
     var h:Int = Int(UIScreen.mainScreen().bounds.size.height)
     let scale=UIScreen.mainScreen().scale
@@ -154,7 +152,42 @@ func getScreenInfo()->(width:Int, height:Int, inch:Float, info:String){
     return (w, h, inch, st)
 }
 
+/**
+ Application Info
+ */
+private func getApplicationInfo()->String{
+    let infoDict = NSBundle.mainBundle().infoDictionary!
+    let id = infoDict["CFBundleIdentifier"] as! String  //开发组织应用id
+    //let versionNum=infoDict["CFBundleVersion"] as! String   //版本名称
+    let appName = infoDict["CFBundleName"] as! String   //app名称
+    let version = infoDict["CFBundleShortVersionString"] as! String    //标识应用程序发布版本号
+    let minOS = infoDict["MinimumOSVersion"] as! String    //最低要求版本号
+    return "当前应用名称：\(appName)，BundleID：\(id)，版本号：\(version)，要求最低系统版本：\(minOS)\n"
+}
 
+/**
+ Carrier name
+ */
+private func getCarrierInfo()->String {
+    let telephonyInfo: CTTelephonyNetworkInfo = CTTelephonyNetworkInfo()
+    let carrier = telephonyInfo.subscriberCellularProvider
+    let name = carrier?.carrierName
+    /*
+    Optional(CTCarrier (0x146f435f0) {
+        Carrier name: [M1 Singapore]
+        Mobile Country Code: [525]
+        Mobile Network Code:[03]
+        ISO Country Code:[sg]
+        Allows VOIP? [YES]
+        }
+*/
+    return "运营商名称：" + (name==nil ? "未知" : "\(name)") + "\n"
+}
+
+/**
+ Init for all info
+ - parameter ctl: ViewController
+ */
 func initInfoTest(ctl: ShowController){
     let main = ctl.show
     let frame = CGRect(x: 20, y: 20, width: main.frame.width-40, height: main.frame.height-40)
@@ -162,10 +195,16 @@ func initInfoTest(ctl: ShowController){
     
     //静态信息
     if staticInfo.isEmpty{
-        staticInfo.appendContentsOf("\t\t\t系统&设备信息\n")
+        let date: NSDate = NSDate.init()
+        let dateFormatter: NSDateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "YYYY年MM月dd日"
+        let dateString=dateFormatter.stringFromDate(date)
+        staticInfo.appendContentsOf("今天是\(dateString)\n")
+        staticInfo.appendContentsOf(getApplicationInfo())
+        staticInfo.appendContentsOf("\n\n\t\t\t系统&设备信息\n")
         staticInfo.appendContentsOf(getSystemInfo())
         staticInfo.appendContentsOf(getDeviceInfo().info)
-        //运营商，日期，APP信息
+        staticInfo.appendContentsOf(getCarrierInfo())
     }
     
     //动态信息
@@ -176,7 +215,6 @@ func initInfoTest(ctl: ShowController){
     if ssid.isEmpty {   ssid="WIFI状态： 未连接\n"  }
         else { ssid = "WIFI状态： \(ssid) 已连接\n"  }
     dyInfo.appendContentsOf(ssid)
-    
     
     infoText.text = staticInfo + "\n\n"+dyInfo
     infoText.userInteractionEnabled = false

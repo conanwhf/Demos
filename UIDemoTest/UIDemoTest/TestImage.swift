@@ -16,7 +16,7 @@ private let btnString=[["->灰度","->彩色"],["ScaleToFill","AscpectFit","Aspe
 private var filter:Array<CIFilter>=[]
 private let configDefault:Array<Float>=[50, 25, 50, 65, 100]
 
-func getTargetImage(mode:String="filter")->UIImage{
+private func getTargetImage(mode:String="filter")->UIImage{
     if (mode=="filter"){
         //得到过滤后的图片
         for i in 1...filter.count-1{
@@ -79,9 +79,6 @@ func initImageTest(ctl: ShowController){
     filter.last?.setValue(0, forKey: "InputIntensity")//色度default关闭
 //    print(filter[1].attributes)
 }
-
-
-
 
 func refreshImageTest(ctl: ShowController, sender: AnyObject?) {
     let img = ctl.demo as! UIImageView
