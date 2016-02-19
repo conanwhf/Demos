@@ -255,7 +255,7 @@ private func shakeAnimation(ctl:ShowController, add:Bool) {
 private func imageArray(ctl:ShowController, add:Bool){
     let main = ctl.show
     if add {//添加动画
-        let imgView = UIImageView(frame:CGRectMake(50, 50, 200.0,  200.0))
+        let imgView = UIImageView(frame:CGRectMake(50, 10, 200.0,  200.0))
         //（1）图片数组（animationImages. animationImages里面一定要装的是UIImage 不能是图片的名称字符串
         imgView.animationImages = []
         for i in 0...7 {
@@ -306,10 +306,14 @@ private func rotateUIView(ctl:ShowController, add:Bool){
         let view = UIImageView(frame:CGRectMake(50, 50, 100.0,  100.0))
         view.image=UIImage(named: "demo.jpg")
         main.addSubview(view)
+        let view2 = UIView(frame: CGRect(x: 100, y: 300, width: 100, height: 100))
+        view2.backgroundColor=UIColor.blackColor()
+        main.addSubview(view2)
         
         //利用仿色变换旋转UI
-        UIView.animateWithDuration(3, animations: {() -> Void in
-            view.transform = CGAffineTransformRotate(view.transform, CGFloat(180.0 * (M_PI / 180.0)))
+        UIView.animateWithDuration(5, animations: {() -> Void in
+            view.transform = CGAffineTransformRotate(view.transform, CGFloat(M_PI))
+            view2.backgroundColor=UIColor.yellowColor()
         })
     }
     else{//其他特殊清理动作
@@ -320,14 +324,14 @@ private func rotateUIView(ctl:ShowController, add:Bool){
 private func moveUIView(ctl:ShowController, add:Bool){
     let main = ctl.show
     if add {//添加动画
-        let view = UIImageView(frame:CGRectMake(50, 50, 100.0,  100.0))
+        let view = UIImageView(frame:CGRectMake(50, 0, 150.0,  150.0))
         view.image=UIImage(named: "demo.jpg")
         main.addSubview(view)
         
-        UIView.animateWithDuration(5.0, delay: 0.5, usingSpringWithDamping: 1.0, initialSpringVelocity: 5.0, options: .CurveEaseInOut, animations: {() -> Void in
+        UIView.animateWithDuration(5.0, delay: 0.5, usingSpringWithDamping: 0.15, initialSpringVelocity: 2.5, options: .CurveEaseInOut, animations: {() -> Void in
             // code...
             var point: CGPoint = view.center
-            point.y += 150
+            point.y += 250
             view.center = point
             }, completion: {(finished: Bool) -> Void in
                 // 动画完成后执行
