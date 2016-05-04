@@ -136,7 +136,7 @@ private func cycleProcess(ctl:ShowController, add:Bool){
                 self.drawLineAnimation(self.arcLayer)
             })
             if (progressTimer == nil) && (process != -1){
-                progressTimer = NSTimer.scheduledTimerWithTimeInterval(0.1, target: ctl!, selector: "timerDone", userInfo: nil, repeats: true)
+                progressTimer = NSTimer.scheduledTimerWithTimeInterval(0.1, target: ctl!, selector: #selector(ShowController.timerDone), userInfo: nil, repeats: true)
             }
         }
         func update() {
@@ -353,7 +353,7 @@ private func rainbow(ctl:ShowController, add:Bool){
             var arrayColors = [UIColor.orangeColor(), UIColor.yellowColor(), UIColor.greenColor(), UIColor.blueColor(), UIColor.purpleColor(), UIColor.redColor(), UIColor.blackColor()]
             let colorCount = Double(arrayColors.count)
             // 循环添加关键帧
-            for var i = 0; i < Int(colorCount); i++ {
+            for i in 0..<Int(colorCount) {
                 UIView.addKeyframeWithRelativeStartTime( Double(i) / colorCount, relativeDuration: 1.0 / colorCount, animations: {() -> Void in
                     view.backgroundColor = arrayColors[i]})
             }
@@ -391,7 +391,7 @@ func initAnimationTest(ctl: ShowController){
     btn.backgroundColor=UIColor.blueColor()
     btn.layer.cornerRadius = 10.0
     btn.layer.masksToBounds = true;
-    btn.addTarget(ctl, action: Selector("configChanged:"), forControlEvents: UIControlEvents.TouchUpInside)
+    btn.addTarget(ctl, action: #selector(ShowController.configChanged(_:)), forControlEvents: UIControlEvents.TouchUpInside)
     btn.tag=magicButtonTag
     main.addSubview(btn)
 }

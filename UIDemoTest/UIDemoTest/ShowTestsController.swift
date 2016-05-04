@@ -71,14 +71,14 @@ class ShowController : UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         log = self.mylog
         bar.topItem?.title = self.title
-        btnlog.addTarget(self, action: "showOrHideLog", forControlEvents: .TouchUpInside)
+        btnlog.addTarget(self, action: #selector(ShowController.showOrHideLog), forControlEvents: .TouchUpInside)
         logout.editable = false
         logout.text = ""
         logout.hidden = true
         logout.layer.cornerRadius = 10.0
         self.view.bringSubviewToFront(logout)
         //注册系统监听事件
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "orientChange:", name: UIDeviceOrientationDidChangeNotification, object: nil)//屏幕翻转
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ShowController.orientChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)//屏幕翻转
     }
     
     override func didReceiveMemoryWarning() {

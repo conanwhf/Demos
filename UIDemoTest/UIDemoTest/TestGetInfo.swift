@@ -19,17 +19,35 @@ private var dyInfo = ""
  - returns: SSID
  */
 private func getSSID() -> String {
-    let interfaces = CNCopySupportedInterfaces()
-    guard interfaces != nil else{ return "" }
-
-    let if0: UnsafePointer<Void>? = CFArrayGetValueAtIndex(interfaces!, 0)
-    guard if0 != nil else{ return "" }
-
-    let interfaceName: CFStringRef = unsafeBitCast(if0!, CFStringRef.self)
-    let dictionary = CNCopyCurrentNetworkInfo(interfaceName) as NSDictionary?
-    guard dictionary != nil else{ return "" }
-
-    return String(dictionary![String(kCNNetworkInfoKeySSID)]!)
+    /*if #available(iOS 9.0, *) {
+        let networkInterfaces = NEHotspotHelper.supportedNetworkInterfaces()
+        let wifi = NEHotspotNetwork()
+        
+        print(wifi)
+        print(networkInterfaces)
+        
+        let st = "SSID：\(wifi.SSID)， BSSID：\(wifi.BSSID)， 信号强度：\(wifi.signalStrength)， 加密：\(wifi.secure)， 自动加入：\(wifi.autoJoined)\n"
+        return st
+        /*for hotspotNetwork in NEHotspotHelper.supportedNetworkInterfaces() {
+         let signalStrength = hotspotNetwork.signalStrength
+         print(signalStrength)
+         }
+         
+        */
+    }*/if false {}
+    else {
+            let interfaces = CNCopySupportedInterfaces()
+            guard interfaces != nil else{ return "" }
+            
+            let if0: UnsafePointer<Void>? = CFArrayGetValueAtIndex(interfaces, 0)
+            guard if0 != nil else{ return "" }
+            
+            let interfaceName: CFStringRef = unsafeBitCast(if0!, CFStringRef.self)
+            let dictionary = CNCopyCurrentNetworkInfo(interfaceName) as NSDictionary?
+            guard dictionary != nil else{ return "" }
+            
+            return String(dictionary![String(kCNNetworkInfoKeySSID)])
+    }
 }
 
 /**

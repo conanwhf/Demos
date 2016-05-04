@@ -27,7 +27,7 @@ func initUIViewTest(ctl: ShowController){
     ctl.sliderConfigs.forEach({
         main.addSubview($0.slider)
         main.addSubview($0.label)
-        $0.slider.addTarget(ctl, action: Selector("configChanged:"), forControlEvents: UIControlEvents.ValueChanged)
+        $0.slider.addTarget(ctl, action: #selector(ShowController.configChanged(_:)), forControlEvents: UIControlEvents.ValueChanged)
     })
     
     let x = (Float(mainSize.width) - defaultSize.0)/2

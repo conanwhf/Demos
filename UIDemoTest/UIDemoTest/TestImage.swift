@@ -16,6 +16,21 @@ private let btnString=[["->灰度","->彩色"],["ScaleToFill","AscpectFit","Aspe
 private var filter:Array<CIFilter>=[]
 private let configDefault:Array<Float>=[50, 25, 50, 65, 100]
 
+extension UIImage {
+    func imageWithRoundedCornersAndSize(cornerRadius radius: CGFloat, sizeToFit: CGSize = CGSize.zero) -> UIImage {
+        let fit = (sizeToFit == CGSize.zero) ? CGSize(width: radius, height: radius) : sizeToFit
+        let rect: CGRect = CGRect(origin: CGPoint(x: 0,y: 0), size: fit)
+        
+        UIGraphicsBeginImageContextWithOptions(fit, false, UIScreen.mainScreen().scale)
+        CGContextAddPath(UIGraphicsGetCurrentContext(),UIBezierPath(roundedRect: rect, byRoundingCorners: .AllCorners, cornerRadii: CGSize(width: radius, height: radius)).CGPath);
+        CGContextClip(UIGraphicsGetCurrentContext())
+        self.drawInRect(rect)
+        let output: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return output
+    }
+}
+
 private func getTargetImage(mode:String="filter")->UIImage{
     if (mode=="filter"){
         //得到过滤后的图片
@@ -43,7 +58,7 @@ func initImageTest(ctl: ShowController){
     ctl.sliderConfigs.forEach({
         main.addSubview($0.slider)
         main.addSubview($0.label)
-        $0.slider.addTarget(ctl, action: Selector("configChanged:"), forControlEvents: UIControlEvents.ValueChanged)
+        $0.slider.addTarget(ctl, action: #selector(ShowController.configChanged), forControlEvents: UIControlEvents.ValueChanged)
     })
     
     var x = 0
@@ -54,7 +69,7 @@ func initImageTest(ctl: ShowController){
         btn[i].setTitle(btnString[i][j], forState: .Normal)
         btn[i].setTitleColor(UIColor.blueColor(), forState: .Normal)
         btn[i].backgroundColor=UIColor.lightGrayColor()
-        btn[i].addTarget(ctl, action: Selector("configChanged:"), forControlEvents: UIControlEvents.TouchUpInside)
+        btn[i].addTarget(ctl, action: #selector(ShowController.configChanged(_:)), forControlEvents: UIControlEvents.TouchUpInside)
         btn[i].tag=i
         main.addSubview(btn[i])
     }
@@ -109,7 +124,7 @@ func refreshImageTest(ctl: ShowController, sender: AnyObject?) {
                     img.layer.borderWidth = 0
                 }
             case 2: //保存
-                UIImageWriteToSavedPhotosAlbum(img.image!, ctl, "savedImage:didFinishSavingWithError:contextInfo:", nil)
+                UIImageWriteToSavedPhotosAlbum(img.image!, ctl, #selector(ShowController.savedImage(_ : didFinishSavingWithError : contextInfo: )), nil)
             case 3: //复原
                 for (i,j) in ctl.sliderConfigs.enumerate() { j.value=configDefault[i] }
                 for i in 0...btnState.count-1 { btnState[i]=0 }
@@ -148,5 +163,5 @@ func refreshImageTest(ctl: ShowController, sender: AnyObject?) {
         filter[2].setValue((100-config[4])/100.0, forKey: "InputIntensity")
         img.image =  getTargetImage("filter")
     }
-    
+    //img.image = img.image?.imageWithRoundedCornersAndSize(cornerRadius: 50.0)
 }
